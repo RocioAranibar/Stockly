@@ -102,7 +102,7 @@ fun ProductDetailScreen(product: Product, onBack: () -> Unit, onMovement: () -> 
         item {
             TopBack("", onBack)
             Box(Modifier.fillMaxWidth().height(220.dp).background(Color(0xFFF0ECE3), RoundedCornerShape(24.dp)), contentAlignment = Alignment.Center) {
-                Text(product.emoji, fontSize = 100.sp)
+                ProductPhoto(product.photoUri, product.emoji, Modifier.fillMaxSize(), 92)
             }
             Spacer(Modifier.height(18.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -153,14 +153,23 @@ fun ProductFormScreen(existing: Product?, categories: List<String>, onBack: () -
     var stock by remember(existing) { mutableStateOf(existing?.stock?.toString() ?: "0") }
     var minStock by remember(existing) { mutableStateOf(existing?.minimumStock?.toString() ?: "0") }
     var description by remember(existing) { mutableStateOf(existing?.description ?: "") }
+    var photoUri by remember(existing) { mutableStateOf(existing?.photoUri) }
     var categoryMenu by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
 
     LazyColumn(Modifier.fillMaxSize().padding(horizontal = 18.dp), contentPadding = PaddingValues(bottom = 30.dp)) {
         item {
             TopBack(if (existing == null) "Nuevo producto" else "Editar producto", onBack)
-            Box(Modifier.fillMaxWidth().height(130.dp).background(Color(0xFFF0ECE3), RoundedCornerShape(20.dp)), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) { Text(existing?.emoji ?: "📷", fontSize = 45.sp); Text("Foto del producto", color = Muted) }
+            ProductPhoto(
+                uri = photoUri,
+                emoji = existing?.emoji ?: "",
+                modifier = Modifier.fillMaxWidth().height(180.dp),
+                emojiSize = 60
+            )
+            Spacer(Modifier.height(8.dp))
+            ProductPhotoPicker(onSelected = { photoUri = it })
+            if (photoUri != null) {
+                TextButton(onClick = { photoUri = null }) { Text("Quitar foto") }
             }
             Spacer(Modifier.height(16.dp))
             FormField("Nombre del producto", name, { name = it }, "Ej. Remera básica")
@@ -185,7 +194,7 @@ fun ProductFormScreen(existing: Product?, categories: List<String>, onBack: () -
                 if (name.isBlank() || p == null || p < 0 || s == null || s < 0 || m == null || m < 0) {
                     error = "Revisá los campos obligatorios y los valores numéricos."
                 } else {
-                    onSave(Product(existing?.id ?: "p${kotlin.random.Random.nextLong()}", name.trim(), category, p, existing?.stock ?: s, m, description.trim(), existing?.emoji ?: "📦"))
+                    onSave(Product(existing?.id ?: "p${kotlin.random.Random.nextLong()}", name.trim(), category, p, existing?.stock ?: s, m, description.trim(), existing?.emoji ?: "📦", photoUri))
                 }
             }, modifier = Modifier.fillMaxWidth().height(52.dp), shape = RoundedCornerShape(16.dp)) {
                 Text(if (existing == null) "Guardar producto" else "Guardar cambios")

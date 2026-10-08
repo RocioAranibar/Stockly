@@ -11,7 +11,8 @@ data class Product(
     val stock: Int,
     val minimumStock: Int,
     val description: String = "",
-    val emoji: String = "📦"
+    val emoji: String = "📦",
+    val photoUri: String? = null
 ) {
     val status: StockStatus
         get() = when {

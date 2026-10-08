@@ -42,7 +42,7 @@ fun ProductRow(product: Product, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(Modifier.size(52.dp).background(Color(0xFFF0ECE3), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-            Text(product.emoji, fontSize = 26.sp)
+            ProductPhoto(product.photoUri, product.emoji, Modifier.size(52.dp), 26)
         }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
