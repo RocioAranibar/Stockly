@@ -57,43 +57,6 @@ fun WelcomeScreen(onStart: () -> Unit) {
 }
 
 @Composable
-fun DashboardScreen(state: InventoryState, onProduct: (String) -> Unit, onSeeProducts: (String) -> Unit, onSeeSales: () -> Unit) {
-    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 18.dp), contentPadding = PaddingValues(bottom = 100.dp)) {
-        item {
-            Spacer(Modifier.height(12.dp))
-            Text("Hola 👋", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            Text("Así va tu negocio hoy", color = Muted)
-            Spacer(Modifier.height(18.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StatCard("Productos", state.products.size.toString(), Icons.Default.Inventory2, Forest, Modifier.weight(1f), onClick = { onSeeProducts("Todos") })
-                StatCard("Stock bajo", state.lowStockCount.toString(), Icons.Default.WarningAmber, Warning, Modifier.weight(1f), onClick = { onSeeProducts("Stock bajo") })
-            }
-            Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StatCard("Sin stock", state.outOfStockCount.toString(), Icons.Default.RemoveShoppingCart, Danger, Modifier.weight(1f), onClick = { onSeeProducts("Sin stock") })
-                StatCard("Ventas hoy", state.todaySalesUnits.toString(), Icons.Default.TrendingUp, Success, Modifier.weight(1f), onClick = onSeeSales)
-            }
-            Spacer(Modifier.height(24.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Productos con stock bajo", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Text("Ver todos", color = Forest, modifier = Modifier.clickable { onSeeProducts("Stock bajo") })
-            }
-            Spacer(Modifier.height(8.dp))
-        }
-        val low = state.products.filter { it.status != StockStatus.AVAILABLE }
-        if (low.isEmpty()) item { EmptyCard("Todo está bien", "No tenés productos por reponer.") }
-        else items(low.take(4)) { ProductRow(it) { onProduct(it.id) } }
-
-        item {
-            Spacer(Modifier.height(24.dp))
-            Text("Últimos movimientos", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(8.dp))
-        }
-        items(state.movements.take(4)) { movement -> MovementRow(movement) }
-    }
-}
-
-@Composable
 fun ProductsScreen(state: InventoryState, onProduct: (String) -> Unit, onAdd: () -> Unit, initialFilter: String = "Todos") {
     var search by remember { mutableStateOf("") }
     var filter by remember(initialFilter) { mutableStateOf(initialFilter) }

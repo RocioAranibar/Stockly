@@ -68,7 +68,10 @@ fun StocklyApp() {
                         onSeeSales = {
                             movementsFilter = "Ventas hoy"
                             screen = Screen.Movements
-                        }
+                        },
+                        onAddProduct = { screen = Screen.ProductForm() },
+                        onSeeMovements = { movementsFilter = "Todos"; screen = Screen.Movements },
+                        onSeeStats = { screen = Screen.Stats }
                     )
                     Screen.Products -> ProductsScreen(state, { screen = Screen.Detail(it) }, { screen = Screen.ProductForm() }, initialFilter = productsFilter)
                     Screen.Movements -> MovementsScreen(state, initialFilter = movementsFilter)
