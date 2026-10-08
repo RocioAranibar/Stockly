@@ -20,8 +20,8 @@ import com.stockly.app.domain.StockStatus
 import com.stockly.app.theme.*
 
 @Composable
-fun StatCard(title: String, value: String, icon: ImageVector, tint: Color, modifier: Modifier = Modifier) {
-    Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = StocklyCard), shape = RoundedCornerShape(18.dp)) {
+fun StatCard(title: String, value: String, icon: ImageVector, tint: Color, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+    Card(onClick = onClick, modifier = modifier, colors = CardDefaults.cardColors(containerColor = StocklyCard), shape = RoundedCornerShape(18.dp)) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(40.dp).background(tint.copy(alpha = .12f), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
                 Icon(icon, null, tint = tint)

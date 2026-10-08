@@ -57,335 +57,46 @@ fun WelcomeScreen(onStart: () -> Unit) {
 }
 
 @Composable
-fun DashboardScreen(
-    state: InventoryState,
-    onProduct: (String) -> Unit,
-    onSeeProducts: () -> Unit
-) {
-    val lowStockProducts = state.products
-        .filter { it.status != StockStatus.AVAILABLE }
-        .take(3)
-
-    val weeklyValues = listOf(20, 34, 25, 43, 30, 52, 41)
-    val weeklyLabels = listOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
-    val maxValue = weeklyValues.maxOrNull() ?: 1
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxHeight()
-                .widthIn(max = 520.dp)
-                .padding(horizontal = 18.dp),
-            contentPadding = PaddingValues(
-                top = 12.dp,
-                bottom = 110.dp
-            )
-        ) {
-
+fun DashboardScreen(state: InventoryState, onProduct: (String) -> Unit, onSeeProducts: (String) -> Unit, onSeeSales: () -> Unit) {
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 18.dp), contentPadding = PaddingValues(bottom = 100.dp)) {
         item {
-            // CABECERA
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "Hola, Sofi 👋",
-                        fontSize = 27.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        text = "Así va tu negocio hoy",
-                        fontSize = 13.sp,
-                        color = Muted
-                    )
-                }
-
-                IconButton(
-                    onClick = {}
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.NotificationsNone,
-                        contentDescription = "Notificaciones"
-                    )
-                }
+            Spacer(Modifier.height(12.dp))
+            Text("Hola 👋", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Text("Así va tu negocio hoy", color = Muted)
+            Spacer(Modifier.height(18.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                StatCard("Productos", state.products.size.toString(), Icons.Default.Inventory2, Forest, Modifier.weight(1f), onClick = { onSeeProducts("Todos") })
+                StatCard("Stock bajo", state.lowStockCount.toString(), Icons.Default.WarningAmber, Warning, Modifier.weight(1f), onClick = { onSeeProducts("Stock bajo") })
             }
-
-            Spacer(Modifier.height(16.dp))
-
-            // ESTADÍSTICAS SUPERIORES
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                StatCard(
-                    title = "Productos",
-                    value = state.products.size.toString(),
-                    icon = Icons.Default.Inventory2,
-                    tint = Forest,
-                    modifier = Modifier.weight(1f)
-                )
-
-                StatCard(
-                    title = "Stock bajo",
-                    value = state.lowStockCount.toString(),
-                    icon = Icons.Default.WarningAmber,
-                    tint = Warning,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
             Spacer(Modifier.height(10.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                StatCard(
-                    title = "Sin stock",
-                    value = state.outOfStockCount.toString(),
-                    icon = Icons.Default.Cancel,
-                    tint = Danger,
-                    modifier = Modifier.weight(1f)
-                )
-
-                StatCard(
-                    title = "Ventas hoy",
-                    value = state.todayOutUnits.toString(),
-                    icon = Icons.Default.BarChart,
-                    tint = Success,
-                    modifier = Modifier.weight(1f)
-                )
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                StatCard("Sin stock", state.outOfStockCount.toString(), Icons.Default.RemoveShoppingCart, Danger, Modifier.weight(1f), onClick = { onSeeProducts("Sin stock") })
+                StatCard("Ventas hoy", state.todaySalesUnits.toString(), Icons.Default.TrendingUp, Success, Modifier.weight(1f), onClick = onSeeSales)
             }
-
             Spacer(Modifier.height(24.dp))
-
-            // VENTAS DE LA SEMANA
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Ventas de esta semana",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Text(
-                    text = "Ver más ›",
-                    color = Forest,
-                    fontSize = 12.sp
-                )
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("Productos con stock bajo", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("Ver todos", color = Forest, modifier = Modifier.clickable { onSeeProducts("Stock bajo") })
             }
-
-            Spacer(Modifier.height(10.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = StocklyCard
-                ),
-                shape = RoundedCornerShape(18.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(105.dp)
-                        .padding(
-                            start = 14.dp,
-                            end = 14.dp,
-                            top = 14.dp,
-                            bottom = 10.dp
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    weeklyValues.forEachIndexed { index, value ->
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Bottom,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                        ) {
-
-                            Spacer(
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .width(14.dp)
-                                    .height(
-                                        (58f * value / maxValue)
-                                            .coerceAtLeast(8f)
-                                            .dp
-                                    )
-                                    .background(
-                                        color = Forest.copy(alpha = 0.55f),
-                                        shape = RoundedCornerShape(
-                                            topStart = 4.dp,
-                                            topEnd = 4.dp
-                                        )
-                                    )
-                            )
-
-                            Spacer(Modifier.height(6.dp))
-
-                            Text(
-                                text = weeklyLabels[index],
-                                fontSize = 9.sp,
-                                color = Muted
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(24.dp))
-
-            // STOCK BAJO
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Productos con stock bajo",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Text(
-                    text = "Ver todos ›",
-                    color = Forest,
-                    fontSize = 12.sp,
-                    modifier = Modifier.clickable {
-                        onSeeProducts()
-                    }
-                )
-            }
-
             Spacer(Modifier.height(8.dp))
         }
+        val low = state.products.filter { it.status != StockStatus.AVAILABLE }
+        if (low.isEmpty()) item { EmptyCard("Todo está bien", "No tenés productos por reponer.") }
+        else items(low.take(4)) { ProductRow(it) { onProduct(it.id) } }
 
-        if (lowStockProducts.isEmpty()) {
-
-            item {
-                EmptyCard(
-                    title = "Stock al día",
-                    body = "No tenés productos para reponer."
-                )
-            }
-
-        } else {
-
-            items(
-                items = lowStockProducts,
-                key = { it.id }
-            ) { product ->
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable {
-                            onProduct(product.id)
-                        },
-                    colors = CardDefaults.cardColors(
-                        containerColor = StocklyCard
-                    ),
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .background(
-                                    Color(0xFFF0ECE3),
-                                    RoundedCornerShape(10.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = product.emoji,
-                                fontSize = 23.sp
-                            )
-                        }
-
-                        Spacer(Modifier.width(12.dp))
-
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = product.name,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 14.sp
-                            )
-
-                            Text(
-                                text = if (product.stock == 0) {
-                                    "Sin stock"
-                                } else {
-                                    "Quedan ${product.stock} unidades"
-                                },
-                                fontSize = 12.sp,
-                                color = if (product.stock == 0) {
-                                    Danger
-                                } else {
-                                    Muted
-                                }
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .size(9.dp)
-                                .background(
-                                    color = if (product.stock == 0) {
-                                        Danger
-                                    } else {
-                                        Warning
-                                    },
-                                    shape = RoundedCornerShape(50)
-                                )
-                        )
-
-                        Spacer(Modifier.width(7.dp))
-
-                        Icon(
-                            imageVector = Icons.Default.ChevronRight,
-                            contentDescription = null,
-                            tint = Muted,
-                            modifier = Modifier.size(17.dp)
-                        )
-                    }
-                }
-            }
+        item {
+            Spacer(Modifier.height(24.dp))
+            Text("Últimos movimientos", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
         }
+        items(state.movements.take(4)) { movement -> MovementRow(movement) }
     }
 }
 
 @Composable
-fun ProductsScreen(state: InventoryState, onProduct: (String) -> Unit, onAdd: () -> Unit) {
+fun ProductsScreen(state: InventoryState, onProduct: (String) -> Unit, onAdd: () -> Unit, initialFilter: String = "Todos") {
     var search by remember { mutableStateOf("") }
-    var filter by remember { mutableStateOf("Todos") }
+    var filter by remember(initialFilter) { mutableStateOf(initialFilter) }
     Column(Modifier.fillMaxSize().padding(horizontal = 18.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text("Productos", fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
@@ -568,13 +279,20 @@ fun MovementFormScreen(product: Product, onBack: () -> Unit, onSave: (MovementTy
 }
 
 @Composable
-fun MovementsScreen(state: InventoryState, productId: String? = null) {
-    var filter by remember { mutableStateOf("Todos") }
-    val list = state.movements.filter { (productId == null || it.productId == productId) && when(filter) { "Entradas" -> it.type == MovementType.IN; "Salidas" -> it.type == MovementType.OUT; else -> true } }
+fun MovementsScreen(state: InventoryState, productId: String? = null, initialFilter: String = "Todos") {
+    var filter by remember(productId, initialFilter) { mutableStateOf(initialFilter) }
+    val list = state.movements.filter {
+        (productId == null || it.productId == productId) && when (filter) {
+            "Entradas" -> it.type == MovementType.IN
+            "Salidas" -> it.type == MovementType.OUT
+            "Ventas hoy" -> it.type == MovementType.OUT && it.reason.equals("Venta", ignoreCase = true) && it.dateLabel == "Hoy"
+            else -> true
+        }
+    }
     Column(Modifier.fillMaxSize().padding(horizontal = 18.dp)) {
         Text(if (productId == null) "Movimientos" else "Historial", fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(12.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { listOf("Todos", "Entradas", "Salidas").forEach { label -> FilterChip(selected = filter == label, onClick = { filter = label }, label = { Text(label) }) } }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { (if (productId == null) listOf("Todos", "Entradas", "Salidas", "Ventas hoy") else listOf("Todos", "Entradas", "Salidas")).forEach { label -> FilterChip(selected = filter == label, onClick = { filter = label }, label = { Text(label) }) } }
         Spacer(Modifier.height(6.dp))
         if (list.isEmpty()) EmptyCard("Sin movimientos", "Los movimientos aparecerán acá.") else LazyColumn(contentPadding = PaddingValues(bottom = 100.dp)) { items(list) { MovementRow(it); HorizontalDivider(color = Color(0xFFEAE5DB)) } }
     }

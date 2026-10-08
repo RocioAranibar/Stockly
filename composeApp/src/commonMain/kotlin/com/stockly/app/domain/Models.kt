@@ -39,5 +39,6 @@ data class InventoryState(
 ) {
     val lowStockCount: Int get() = products.count { it.status == StockStatus.LOW }
     val outOfStockCount: Int get() = products.count { it.status == StockStatus.OUT }
+    val todaySalesUnits: Int get() = movements.filter { it.type == MovementType.OUT && it.reason.equals("Venta", ignoreCase = true) && it.dateLabel == "Hoy" }.sumOf { it.quantity }
     val todayOutUnits: Int get() = movements.filter { it.type == MovementType.OUT && it.dateLabel == "Hoy" }.sumOf { it.quantity }
 }
