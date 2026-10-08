@@ -1,0 +1,15 @@
+STOCKLY - EMPEZÁ ACÁ
+====================
+
+1) Abrí esta carpeta completa con Android Studio.
+2) Si pide el Gradle Wrapper, clic derecho a setup-windows.ps1 > Run with PowerShell.
+3) Esperá que termine el Gradle Sync.
+4) Seleccioná composeApp y un emulador/celular Android.
+5) Run ▶
+
+La app funciona con datos demo sin pedir cuentas ni claves.
+
+IMPORTANTE:
+- Android se puede ejecutar desde Windows.
+- iOS requiere una Mac con Xcode.
+- El SQL para Supabase está en /supabase/schema.sql para la siguiente etapa.
